@@ -1,1 +1,1 @@
-# prins-sceptre
+# prins-scribe

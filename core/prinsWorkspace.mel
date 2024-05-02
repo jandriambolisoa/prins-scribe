@@ -1,0 +1,32 @@
+//Maya 2011 x64 Project Definition
+//Prins standard
+
+workspace -fr "scene" "scenes";
+workspace -fr "IGES" "sources";
+workspace -fr "DXFexport" "datas";
+workspace -fr "OBJexport" "datas";
+workspace -fr "lights" "sources";
+workspace -fr "mel" "mel";
+workspace -fr "particles" "sources";
+workspace -fr "audio" "sound";
+workspace -fr "RIBexport" "datas";
+workspace -fr "RIB" "sources";
+workspace -fr "depth" "sources";
+workspace -fr "autoSave" "scenes/.autoSaves";
+workspace -fr "diskCache" "sources";
+workspace -fr "sourceImages" "sources";
+workspace -fr "animImport" "sources";
+workspace -fr "movie" "movies";
+workspace -fr "iprImages" "datas/img";
+workspace -fr "mayaAscii" "scenes";
+workspace -fr "textures" "sources";
+workspace -fr "aliasWire" "sources";
+workspace -fr "mayaBinary" "scenes";
+workspace -fr "move" "sources";
+workspace -fr "renderScenes" "scenes";
+workspace -fr "images" "datas/img";
+workspace -fr "DXF" "sources";
+workspace -fr "clips" "sources";
+workspace -fr "animExport" "datas/anim";
+workspace -fr "OBJ" "sources";
+workspace -fr "templates" "sources";

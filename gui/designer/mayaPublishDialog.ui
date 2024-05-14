@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mayaPublishDialogWidget</class>
+ <widget class="QWidget" name="mayaPublishDialogWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>213</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="assetBtnContainer">
+     <item>
+      <widget class="QCheckBox" name="mayaAssetBtn">
+       <property name="text">
+        <string>mayaAsset (.ma)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="assetFbxBtn">
+       <property name="text">
+        <string>assetFbx (.fbx)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="assetAbcBtn">
+       <property name="text">
+        <string>assetAlembic (.abc)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="shotBtnContainer">
+     <item>
+      <widget class="QCheckBox" name="mayaShotBtn">
+       <property name="text">
+        <string>mayaShot (.ma)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="animFbxBtn">
+       <property name="text">
+        <string>animFbx (.fbx)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="animAbcBtn">
+       <property name="text">
+        <string>animAlembic (.abc)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

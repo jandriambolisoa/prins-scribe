@@ -119,6 +119,7 @@ def publish(publishFilepath, template, override):
 
     publishCommands = {
         "mayaAsset" : lambda absPath, *args : cmds.file(absPath, exportSelected = True, type = "mayaAscii"),
+        "mayaShot" : lambda absPath, *args : cmds.file(absPath, exportSelectedAnim = True, type = "mayaAscii"),
         "assetAlembic" : lambda absPath, *args: cmds.AbcExport(j = "-f %s -sl -u GuerillaTags -uv -ws -wuvs"%absPath),
         "assetFbx" : lambda absPath, *args: mel.eval('FBXExport -f "%s" -s'%(absPath.replace("\\", "/"))),
         "animFbx" : lambda absPath, *args: mel.eval('FBXExport -f "%s" -s'%(absPath.replace("\\", "/"))),
@@ -141,7 +142,7 @@ def publish(publishFilepath, template, override):
 
     # Message for the user
     mel.eval('print "> PRINS Successfully published your file.\\n"')
-
+    
 
 def deliver(deliveryFilepath, template, size):
     """Delivers a scene in a video format.
@@ -206,3 +207,31 @@ def deliver(deliveryFilepath, template, size):
 
     # Message for the user
     mel.eval('print "> PRINS Successfully delivered your file.\\n"')
+
+
+from prins.api  import Asset
+from prins.api  import Shot
+
+@Asset.save
+def saveAsset(workspace, item):
+    save(workspace, item)
+
+@Shot.save
+def saveShot(workspace, item):
+    save(workspace, item)
+
+@Asset.deliver
+def deliverAsset(deliveryFilepath, template, size):
+    deliver(deliveryFilepath, template, size)
+
+@Shot.deliver
+def deliverShot(deliveryFilepath, template, size):
+    deliver(deliveryFilepath, template, size)
+
+@Asset.publish
+def publishAsset(publishFilepath, template, override):
+    publish(publishFilepath, template, override)
+
+@Shot.publish
+def publishShot(publishFilepath, template, override):
+    publish(publishFilepath, template, override)

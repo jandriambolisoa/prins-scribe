@@ -49,11 +49,14 @@ def save(workspacePath, type):
         shutil.copyfile(defaultWorkspaceFilepath, workspaceFilepath)
 
     # Get scenes absolute path
-    cmds.workspace(workspaceFilepath, o = True)
+    cmds.workspace(workspacePath, o = True)
     root = cmds.workspace(query = True, rd = True)
     scenes = cmds.workspace(fre = "scene")
     scenesPath = os.path.join(root, scenes)
 
+    if not os.path.isdir(scenesPath):
+        os.makedirs(scenesPath)
+        
     allScenes = os.listdir(scenesPath)
 
     # Get version
@@ -69,7 +72,7 @@ def save(workspacePath, type):
 
     # Save
     cmds.file(rename = os.path.join(scenesPath, finder.getResult()))
-    cmds.file(save = True)
+    cmds.file(save = True, type = "mayaAscii")
 
     # Message for the user
     mel.eval('print "> PRINS Successfully saved your file.\\n"')
@@ -118,8 +121,8 @@ def publish(publishFilepath, template, override):
     end = cmds.playbackOptions(query = True, animationEndTime = True)
 
     publishCommands = {
-        "mayaAsset" : lambda absPath, *args : cmds.file(absPath, exportSelected = True, type = "mayaAscii"),
-        "mayaShot" : lambda absPath, *args : cmds.file(absPath, exportSelectedAnim = True, type = "mayaAscii"),
+        "mayaAsset" : lambda absPath, *args : _mayaExportAsset(absPath),
+        "mayaShot" : lambda absPath, *args : _mayaExportShot(absPath),
         "assetAlembic" : lambda absPath, *args: cmds.AbcExport(j = "-f %s -sl -u GuerillaTags -uv -ws -wuvs"%absPath),
         "assetFbx" : lambda absPath, *args: mel.eval('FBXExport -f "%s" -s'%(absPath.replace("\\", "/"))),
         "animFbx" : lambda absPath, *args: mel.eval('FBXExport -f "%s" -s'%(absPath.replace("\\", "/"))),
@@ -133,6 +136,10 @@ def publish(publishFilepath, template, override):
                 cmds.select(child, add = True)
 
     # Publish
+    folderToExport = os.path.split(publishFilepath)[0]
+    if not os.path.isdir(folderToExport):
+        os.makedirs(folderToExport)
+
     publishCommands[template](publishFilepath, start, end)
 
     # Reset selection
@@ -207,6 +214,23 @@ def deliver(deliveryFilepath, template, size):
 
     # Message for the user
     mel.eval('print "> PRINS Successfully delivered your file.\\n"')
+
+
+def _mayaExportAsset(absPath):
+
+    currentScene = cmds.file(query = True, sceneName = True)
+        
+    cmds.file(rename = absPath)
+    cmds.file(exportSelected = True, type = "mayaAscii")
+    cmds.file(currentScene, open = True, force = True)
+
+def _mayaExportShot(absPath):
+
+    currentScene = cmds.file(query = True, sceneName = True)
+
+    cmds.file(rename = absPath)
+    cmds.file(exportSelectedAnim = True, type = "mayaAscii")
+    cmds.file(currentScene, open = True, force = True)
 
 
 from prins.api  import Asset

@@ -17,7 +17,7 @@ class Ui_contextSelectorWidget(object):
     def setupUi(self, contextSelectorWidget):
         if not contextSelectorWidget.objectName():
             contextSelectorWidget.setObjectName(u"contextSelectorWidget")
-        contextSelectorWidget.resize(577, 363)
+        contextSelectorWidget.resize(432, 354)
         self.verticalLayout = QVBoxLayout(contextSelectorWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.contextContainer = QHBoxLayout()
@@ -44,7 +44,7 @@ class Ui_contextSelectorWidget(object):
 
         self.contextContainer.addWidget(self.dccLineEdit)
 
-        self.horizontalSpacer = QSpacerItem(60, 20, QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(60, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
         self.contextContainer.addItem(self.horizontalSpacer)
 
@@ -73,15 +73,7 @@ class Ui_contextSelectorWidget(object):
 
         self.itemContainer.addWidget(self.showsComboBox)
 
-        self.showLineSeparator = QFrame(contextSelectorWidget)
-        self.showLineSeparator.setObjectName(u"showLineSeparator")
-        self.showLineSeparator.setFrameShadow(QFrame.Raised)
-        self.showLineSeparator.setLineWidth(4)
-        self.showLineSeparator.setFrameShape(QFrame.VLine)
-
-        self.itemContainer.addWidget(self.showLineSeparator)
-
-        self.horizontalSpacer_3 = QSpacerItem(200, 20, QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(60, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
         self.itemContainer.addItem(self.horizontalSpacer_3)
 
@@ -122,7 +114,7 @@ class Ui_contextSelectorWidget(object):
 
         self.listFiltersContainer.addWidget(self.taskComboBox)
 
-        self.horizontalSpacer_2 = QSpacerItem(200, 20, QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(60, 20, QSizePolicy.Maximum, QSizePolicy.Minimum)
 
         self.listFiltersContainer.addItem(self.horizontalSpacer_2)
 

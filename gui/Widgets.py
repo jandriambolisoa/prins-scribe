@@ -11,9 +11,9 @@ from prinspyqt.Graphics import getPrinsStyleSheet, getStyleSheet
 from PySide2            import QtWidgets
 from PySide2            import QtGui
 
-from designer.ui_contextSelectorWidget  import Ui_contextSelectorWidget
-from designer.ui_mayaScribeWidget       import Ui_mayaScribeWidget
-from designer.ui_mayaPublishDialog      import Ui_mayaPublishDialogWidget
+from .designer.ui_contextSelectorWidget  import Ui_contextSelectorWidget
+from .designer.ui_mayaScribeWidget       import Ui_mayaScribeWidget
+from .designer.ui_mayaPublishDialog      import Ui_mayaPublishDialogWidget
 
 class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
 
@@ -46,6 +46,7 @@ class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
         allShows = Show.search(projectRoot, "*")
 
         self.showsComboBox.clear()
+        allShows.insert(0, "-- Select --")
         self.showsComboBox.addItems(allShows)
         
 
@@ -63,11 +64,11 @@ class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
         # Get radio buttons state and populate
         if self.assetsRadioBtn.isChecked():
             for task in assetTasks:
-                self.taskComboBox.addItem(text = Task().asString(task))
+                self.taskComboBox.addItems([Task().asString(task)])
 
         elif self.shotsRadioBtn.isChecked():
             for task in shotTasks:
-                self.taskComboBox.addItem(text = Task().asString(task))
+                self.taskComboBox.addItems([Task().asString(task)])
 
 
     def updateListView(self):
@@ -150,7 +151,7 @@ class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
         assetCategories = [c for c in Category._listValues() if c < 50]
         allCategories = []
         for cat in assetCategories:
-            allCategories.append(text = Category().asString(cat))
+            allCategories.append(Category().asString(cat))
 
         category, ok = QtWidgets.QInputDialog.getItem(
             self,
@@ -175,8 +176,12 @@ class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
             description = "No description."
 
         if name and category and description:
+
+            category = Category().asInt(category)
+
             Asset.create(
                 self.projectLineEdit.text(),
+                name,
                 category=[category],
                 showId=[self.showsComboBox.currentText()],
                 description=description
@@ -222,12 +227,12 @@ class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
             name = selectionData["Asset"]
 
             if name in Asset.search(self.projectLineEdit.text(), name, perfectMatch = True):
-                self.variationBtn.setEnabled()
+                self.variationBtn.setEnabled(True)
             else:
-                self.variationBtn.setDisabled()
+                self.variationBtn.setEnabled(False)
 
         elif self.shotsRadioBtn.isChecked():
-            self.variationBtn.setDisabled()
+            self.variationBtn.setEnabled(False)
 
 
     def updateAddBtnStatus(self):
@@ -235,9 +240,9 @@ class ContextSelector(Ui_contextSelectorWidget, QtWidgets.QWidget):
         """
 
         if self.assetsRadioBtn.isChecked():
-            self.addBtn.setEnabled()
+            self.addBtn.setEnabled(True)
         elif self.shotsRadioBtn.isChecked():
-            self.variationBtn.setDisabled()
+            self.variationBtn.setEnabled(False)
 
 
 class MayaScribeWidget(Ui_mayaScribeWidget, QtWidgets.QWidget):
@@ -254,8 +259,8 @@ class MayaScribePublishDialog(Ui_mayaPublishDialogWidget, QtWidgets.QWidget):
 
         if mode == "Asset":
             for btn in self.shotBtnContainer.children():
-                btn.setDisabled()
+                btn.setEnabled(False)
 
         elif mode == "Shot":
             for btn in self.assetBtnContainer.children():
-                btn.setDisabled()
+                btn.setEnabled(False)

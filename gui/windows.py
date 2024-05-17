@@ -24,7 +24,7 @@ class ScribeWindow(QtWidgets.QMainWindow):
         self.setObjectName("Scribe")
         self.setWindowTitle("PRINS Scribe 0.0.1")
         self.setWindowIcon(getIcon(__file__, "scribeWindow"))
-        self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+        #self.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
         self.setStyleSheet(getPrinsStyleSheet())
         self.fullWidget = QtWidgets.QWidget()
         self.mainLayout = QtWidgets.QVBoxLayout()
@@ -37,8 +37,6 @@ class ScribeWindow(QtWidgets.QMainWindow):
         self.commonWidget = ContextSelector()
         self.commonWidget.setContext(__PROJECTPATH__, dcc)
         self.commonWidget.updateShowComboBox()
-        self.commonWidget.updateTaskComboBox()
-        self.commonWidget.updateListView()
         self.mainLayout.addWidget(self.commonWidget)
 
         if dcc == "MAYA":
@@ -46,11 +44,13 @@ class ScribeWindow(QtWidgets.QMainWindow):
             self.mainLayout.addWidget(self.actionWidget)
 
         # Interactivity
+        self.commonWidget.showsComboBox.currentTextChanged.connect(self.commonWidget.updateTaskComboBox)
         self.commonWidget.showsComboBox.currentTextChanged.connect(self.commonWidget.updateListView)
         self.commonWidget.shotsRadioBtn.clicked.connect(self.commonWidget.updateTaskComboBox)
         self.commonWidget.assetsRadioBtn.clicked.connect(self.commonWidget.updateTaskComboBox)
         self.commonWidget.shotsRadioBtn.clicked.connect(self.commonWidget.updateAddBtnStatus)
         self.commonWidget.assetsRadioBtn.clicked.connect(self.commonWidget.updateAddBtnStatus)
+        self.commonWidget.taskComboBox.currentTextChanged.connect(self.commonWidget.updateListView)
         self.commonWidget.addBtn.clicked.connect(self.commonWidget.createAsset)
         self.commonWidget.variationBtn.clicked.connect(self.commonWidget.createVariation)
 
@@ -68,22 +68,20 @@ class ScribeMayaPublishDialogWindow(QtWidgets.QDialog):
         self.setObjectName("ScribeMayaPublishDialog")
         self.setWindowTitle("Select publish formats...")
         self.setWindowIcon(getIcon(__file__, "scribeWindow"))
-        self.setStyleSheet(getPrinsStyleSheet())
-        self.fullWidget = QtWidgets.QWidget()
+        #self.setStyleSheet(getPrinsStyleSheet())
         self.mainLayout = QtWidgets.QVBoxLayout()
-        self.mainLayout.setSpacing(0)
-        self.mainLayout.setContentsMargins(0,0,0,0)
-        self.fullWidget.setLayout(self.mainLayout)
-        self.setCentralWidget(self.fullWidget)
+        #self.mainLayout.setSpacing(0)
+        #self.mainLayout.setContentsMargins(0,0,0,0)
+        self.setLayout(self.mainLayout)
 
         # Setup dialog buttons
         buttons = QtWidgets.QDialogButtonBox.Ok
         self.buttonBox = QtWidgets.QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.getSelectedFormats)
+        self.buttonBox.accepted.connect(self.accept)
 
         # Setup widgets
         self.mainWidget = MayaScribePublishDialog(mode)
-        self.mainLayout.addWidget(self.commonWidget)
+        self.mainLayout.addWidget(self.mainWidget)
         self.mainLayout.addWidget(self.buttonBox)
 
 
@@ -91,11 +89,13 @@ class ScribeMayaPublishDialogWindow(QtWidgets.QDialog):
 
         self.formats = []
 
-        for btn in self.mainWidget.assetBtnContainer.children():
+        # Scan all buttons and list checked ones
+        for i in range(self.mainWidget.assetBtnContainer.count()):
+            btn = self.mainWidget.assetBtnContainer.itemAt(i).widget()
             if btn.isChecked():
                 self.formats.append(btn.objectName())
-
-        for btn in self.mainWidget.shotBtnContainer.children():
+        for i in range(self.mainWidget.shotBtnContainer.count()):
+            btn = self.mainWidget.shotBtnContainer.itemAt(i).widget()
             if btn.isChecked():
                 self.formats.append(btn.objectName())
 

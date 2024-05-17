@@ -2,6 +2,8 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 from PySide2 import QtWidgets
 
+from shiboken2  import wrapInstance
+
 from prins.api import Asset
 from prins.api import Shot
 
@@ -20,14 +22,19 @@ class ScribeApp(ScribeWindow):
         super().__init__(dcc, parent)
 
         if dcc == "MAYA":
-            self.actionWidget.saveBtn(self.saveAction)
+            self.actionWidget.saveBtn.clicked.connect(self.saveAction)
+            self.actionWidget.deliverBtn.clicked.connect(self.deliverAction)
+            self.actionWidget.publishBtn.clicked.connect(self.publishAction)
+
+            self.setObjectName("ScribeApp")
 
     def saveAction(self):
         """Saves the selected item.
         """
         
         projectRoot = self.commonWidget.projectLineEdit.text()
-        selectionIndex = self.commonWidget.listWidget.selectedIndexes()[0]    
+        selectionIndex = self.commonWidget.listWidget.selectedIndexes()[0].row()
+
         task = self.commonWidget.taskComboBox.currentText()
         dcc = self.commonWidget.dccLineEdit.text()
 
@@ -64,14 +71,14 @@ class ScribeApp(ScribeWindow):
         """
 
         projectRoot = self.commonWidget.projectLineEdit.text()
-        selectionIndex = self.commonWidget.listWidget.selectedIndexes()[0]    
+        selectionIndex = self.commonWidget.listWidget.selectedIndexes()[0].row()   
         task = self.commonWidget.taskComboBox.currentText()
         dcc = self.commonWidget.dccLineEdit.text()
 
         saveName = cmds.file(query = True, sceneName = True, shortName = True)
-        isSaved = cmds.file(query = True, modified = True)
+        notSaved = cmds.file(query = True, modified = True)
 
-        if not isSaved:
+        if notSaved:
             raise Exception("Scene have unsaved changes.")
 
         version = os.path.splitext(saveName)[0].split("_")[-1]
@@ -115,14 +122,14 @@ class ScribeApp(ScribeWindow):
     def publishAction(self):
 
         projectRoot = self.commonWidget.projectLineEdit.text()
-        selectionIndex = self.commonWidget.listWidget.selectedIndexes()[0]    
+        selectionIndex = self.commonWidget.listWidget.selectedIndexes()[0].row()    
         task = self.commonWidget.taskComboBox.currentText()
         dcc = self.commonWidget.dccLineEdit.text()
 
         saveName = cmds.file(query = True, sceneName = True, shortName = True)
-        isSaved = cmds.file(query = True, modified = True)
+        notSaved = cmds.file(query = True, modified = True)
 
-        if not isSaved:
+        if notSaved:
             raise Exception("Scene have unsaved changes.")
 
         version = os.path.splitext(saveName)[0].split("_")[-1]
@@ -134,17 +141,16 @@ class ScribeApp(ScribeWindow):
             mayaPublishDialog = ScribeMayaPublishDialogWindow("Asset")
             if mayaPublishDialog.exec_() == QtWidgets.QDialog.Accepted:
                 fileTemplates = mayaPublishDialog.getSelectedFormats()
-                mayaPublishDialog.hide()
 
-            for ft in fileTemplates:
+                for ft in fileTemplates:
 
-                m.publishAsset(
-                    projectRoot,
-                    asset,
-                    task,
-                    version,
-                    self._normFileTemplate(ft)
-                )
+                    m.publishAsset(
+                        projectRoot,
+                        asset,
+                        task,
+                        version,
+                        self._normFileTemplate(ft)
+                    )
 
         if self.commonWidget.shotsRadioBtn.isChecked() and self.commonWidget.dccLineEdit.text() == "MAYA":
 
@@ -176,8 +182,8 @@ class ScribeApp(ScribeWindow):
 
         fileTemplatesBtn = {
             "mayaAssetBtn": "mayaAsset",
-            "assetFbx": "assetFbx",
-            "assetAbc": "assetAlembic",
+            "assetFbxBtn": "assetFbx",
+            "assetAbcBtn": "assetAlembic",
             "mayaShotBtn": "mayaShot",
             "animFbxBtn": "animFbx",
             "animAbcBtn": "animAlembic"
@@ -185,18 +191,23 @@ class ScribeApp(ScribeWindow):
 
         return fileTemplatesBtn[btnName]
 
-
-if __name__ == "__main__":
-
+def openApp():
+    from maya import OpenMayaUI
     import sys
-    qApp = QtWidgets.QApplication(sys.argv)
-    
+
+    if QtWidgets.QApplication.instance():
+        for win in (QtWidgets.QApplication.allWindows()):
+            if 'ScribeApp' in win.objectName(): # update this name to match name below
+                win.destroy()
+
+    ptr = OpenMayaUI.MQtUtil.mainWindow()
+    mayaMainWindow = wrapInstance(int(ptr), QtWidgets.QWidget)
+
     # Get app name
     if "maya.exe" in sys.argv[0]:
         appName = "MAYA"
 
     if not ScribeApp.window:
-        ScribeApp.window = ScribeApp()
-        ScribeApp.window.show()
+        ScribeApp.window = ScribeApp(dcc= appName, parent= mayaMainWindow)
 
-    sys.exit(qApp.exec_())
+    ScribeApp.window.show()
